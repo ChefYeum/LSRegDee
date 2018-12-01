@@ -13,12 +13,9 @@ from statistics import mean #Import statistics module to calculate mean
 def s_ab(a_values, b_values): #Assumes the length of the two lists are equal
 	n = len(a_values)
 	#Initialse each variable
-	sumA = 0
-	sumB = 0
-	sumAB = 0
+	sumA, sumB, sumAB = 0, 0, 0
 	for i in range(n):
-		a = a_values[i]
-		b = b_values[i]
+		a, b = a_values[i], b_values[i]
 		sumA += a
 		sumB += b
 		sumAB += a*b
