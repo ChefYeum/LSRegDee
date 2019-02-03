@@ -1,8 +1,7 @@
-#Import all relevant modules that are  used in the program
-import sys, os, csv
-import lsr_stats as LSR
+from PySide2.QtWidgets import QApplication, QDialog, QHBoxLayout, QVBoxLayout, QTableWidget, QPushButton, QTableWidgetItem, QHeaderView
 
-from PyQt5.QtWidgets import QApplication, QDialog, QHBoxLayout, QVBoxLayout, QTableWidget, QPushButton, QTableWidgetItem, QFileDialog
+import sys
+import lsr_stats as LSR
 
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
@@ -21,6 +20,7 @@ class window(QDialog):
             self.widget_table.setItem(r,0,QTableWidgetItem(''))
             self.widget_table.setItem(r,1,QTableWidgetItem(''))
 
+
     def setup(self):
         #Set the size of the window to 960x540 initiallly at (20,20)
         self.setGeometry(20,20,960,540)
@@ -33,10 +33,8 @@ class window(QDialog):
 
         #Set column labels to 'X' and 'Y'
         self.widget_table.setHorizontalHeaderLabels(['X','Y'])
-
-        #Disable resizing columns&rows
-        self.widget_table.horizontalHeader().setSectionResizeMode(2)
-        self.widget_table.verticalHeader().setSectionResizeMode(2)
+        self.widget_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.widget_table.verticalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
 
         #Create figure, figure canvas and a navigation bar for the graph
         self.figure = Figure()
@@ -47,8 +45,6 @@ class window(QDialog):
         #Setup each button and link each of them to corresponding method
         button_addRow = QPushButton('Add Row', self)
         button_addRow.clicked.connect(self.addRow)
-        button_save = QPushButton('Save', self)
-        button_save.clicked.connect(self.saveData)
         button_plot = QPushButton('Plot', self)
         button_plot.clicked.connect(self.plot)
 
@@ -62,7 +58,6 @@ class window(QDialog):
 
         vLeft.addWidget(self.widget_table)
         vLeft.addWidget(button_addRow)
-        vLeft.addWidget(button_save)
 
         vRight.addWidget(self.navigationBar)
         vRight.addWidget(self.canvas)
@@ -73,18 +68,6 @@ class window(QDialog):
         self.widget_table.insertRow(lastRow) #Insert another row below the last row
         self.widget_table.setItem(lastRow,0,QTableWidgetItem('')) #Set the contents the items on the new row to empty strings
         self.widget_table.setItem(lastRow,1,QTableWidgetItem('')) #"
-
-    def saveData(self):
-        #Get path to save the file from the user
-        path = QFileDialog.getSaveFileName(self, 'Save CSV', os.getenv('HOME'), 'CSV(*.csv)')
-        print (path[0])
-        if path[0] != '': #If the path is not empty:
-            with open(path[0],'w') as csv_file: #Open file for write
-                writer = csv.writer(csv_file, dialect = 'excel')
-                for r in range(self.widget_table.rowCount()): #iterate through the table
-                    x = self.widget_table.item(r,0).text() #Get x value of the current row
-                    y = self.widget_table.item(r,1).text() #Get y value of the current row
-                    writer.writerow([x,y]) #Write [x,y] into the file
 
     def plot(self):
         validVal = [] #Create an array of records
